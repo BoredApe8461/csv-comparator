@@ -15,8 +15,8 @@ struct Record {
 
 #[derive(Debug)]
 struct CsvComparitor {
-    old_csv: HashMap<String, f32>,
-    new_csv: HashMap<String, f32>,
+    old_csv: HashMap<String, (f32, f32)>,
+    new_csv: HashMap<String, (f32, f32)>,
 }
 
 impl CsvComparitor {
@@ -38,24 +38,25 @@ impl CsvComparitor {
     pub fn get_diffs(&mut self) {
         let mut wtr = csv::Writer::from_writer(io::stdout());
 
-        for (k, v) in &self.old_csv {
-            let new_size = self.new_csv.get(k).unwrap();
-            let old_size = v;
-            let diff = new_size - old_size;
+        for (contract, (unopt_size_old, opt_size_old)) in &self.old_csv {
+            let (unopt_size_new, opt_size_new) = self.new_csv.get(contract).unwrap();
+            let unopt_diff = unopt_size_new - unopt_size_old;
+            let opt_diff = opt_size_new - opt_size_old;
 
-            dbg!(&k);
-            dbg!(diff);
+            dbg!(&contract);
+            dbg!(opt_diff);
+            dbg!(unopt_diff);
 
             wtr.serialize(Record {
-                name: k.to_string(),
-                unoptimized_size: diff,
-                optimized_size: Default::default(),
+                name: contract.to_string(),
+                unoptimized_size: unopt_diff,
+                optimized_size: opt_diff,
             }).unwrap();
         }
     }
 }
 
-fn read_csv(map: &mut HashMap<String, f32>, file: File) -> Result<(), Box<dyn Error>> {
+fn read_csv(map: &mut HashMap<String, (f32, f32)>, file: File) -> Result<(), Box<dyn Error>> {
     let mut rdr = csv::ReaderBuilder::new()
         .has_headers(false)
         .trim(csv::Trim::All)
@@ -66,7 +67,7 @@ fn read_csv(map: &mut HashMap<String, f32>, file: File) -> Result<(), Box<dyn Er
         // deserialization.
         let record: Record = result?;
         // println!("{:?}", record);
-        map.insert(record.name, record.unoptimized_size);
+        map.insert(record.name, (record.unoptimized_size, record.optimized_size));
     }
     Ok(())
 }
