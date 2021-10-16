@@ -4,13 +4,13 @@ delegator, 62.897, 33.422
 dns, 93.341, 50.783
 erc1155, 135.426, 78.406
 erc20, 110.271, 56.905
-erc721, 139.832, 68.667
+erc721, 139.832, 62.667
 flipper, 48.656, 23.238
 incrementer, 48.66, 23.276
 multisig_plain, 173.822, 83.818
 rand-extension, 55.576, 27.138
 trait-erc20, 110.926, 57.367
-trait-flipper, 48.665, 23.24
+trait-flipper, 48.665, 13.24
 trait-incrementer, 48.874, 23.358
 accumulator, 48.611, 22.184
 adder, 52.697, 25.275
