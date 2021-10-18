@@ -7,17 +7,20 @@ use serde::{Deserialize, Serialize};
 
 type Result<T> = std::result::Result<T, Box<dyn Error>>;
 
+type OptimizedSize = f32;
+type UnoptimizedSize = f32;
+
 #[derive(Debug, Serialize, Deserialize)]
 struct Row {
     name: String,
-    unoptimized_size: f32,
-    optimized_size: f32,
+    unoptimized_size: UnoptimizedSize,
+    optimized_size: OptimizedSize,
 }
 
 #[derive(Debug, Default)]
 struct CsvComparator {
-    old_csv: HashMap<String, (f32, f32)>,
-    new_csv: HashMap<String, (f32, f32)>,
+    old_csv: HashMap<String, (UnoptimizedSize, OptimizedSize)>,
+    new_csv: HashMap<String, (UnoptimizedSize, OptimizedSize)>,
 }
 
 impl CsvComparator {
@@ -54,7 +57,7 @@ impl CsvComparator {
     }
 }
 
-fn read_csv(map: &mut HashMap<String, (f32, f32)>, file: File) -> Result<()> {
+fn read_csv(map: &mut HashMap<String, (UnoptimizedSize, OptimizedSize)>, file: File) -> Result<()> {
     let mut rdr = csv::ReaderBuilder::new()
         .has_headers(false)
         .trim(csv::Trim::All)
