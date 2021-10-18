@@ -15,12 +15,12 @@ struct Row {
 }
 
 #[derive(Debug, Default)]
-struct CsvComparitor {
+struct CsvComparator {
     old_csv: HashMap<String, (f32, f32)>,
     new_csv: HashMap<String, (f32, f32)>,
 }
 
-impl CsvComparitor {
+impl CsvComparator {
     fn new() -> Self {
         Default::default()
     }
@@ -78,10 +78,10 @@ fn main() -> Result<()> {
     let old = File::open(&args[1])?;
     let new = File::open(&args[2])?;
 
-    let mut comparitor = CsvComparitor::new();
-    comparitor.write_old(old)?;
-    comparitor.write_new(new)?;
-    comparitor.get_diffs()?;
+    let mut comparator = CsvComparator::new();
+    comparator.write_old(old)?;
+    comparator.write_new(new)?;
+    comparator.get_diffs()?;
 
     // if let Err(err) = read_csv(f) {
     //     println!("error running example: {}", err);
