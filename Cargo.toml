@@ -2,8 +2,9 @@
 name = "csv-size-diff"
 version = "0.1.0"
 edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+authors = ["Hernando Castano <hernando@hcastano.com>"]
+license = "MIT"
+readme = "README.md"
 
 [dependencies]
 csv = "1.1"
