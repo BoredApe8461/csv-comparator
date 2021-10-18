@@ -1,4 +1,4 @@
-# CSV Comparitor
+# CSV Comparator
 
 This program is meant to be used as part of the `ink-waterfall` CI in order to see how
 the size of different smart contracts changes over time. It does this by taking two CSV
