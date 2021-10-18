@@ -34,16 +34,14 @@ impl CsvComparator {
     }
 
     fn get_diffs(&mut self) -> Result<()> {
-        let mut wtr = csv::Writer::from_writer(io::stdout());
+        let mut wtr = csv::WriterBuilder::new()
+            .has_headers(false)
+            .from_writer(io::stdout());
 
         for (contract, (unopt_size_old, opt_size_old)) in &self.old_csv {
             let (unopt_size_new, opt_size_new) = self.new_csv.get(contract).unwrap();
             let unopt_diff = unopt_size_new - unopt_size_old;
             let opt_diff = opt_size_new - opt_size_old;
-
-            dbg!(&contract);
-            dbg!(opt_diff);
-            dbg!(unopt_diff);
 
             wtr.serialize(Row {
                 name: contract.to_string(),
@@ -82,11 +80,6 @@ fn main() -> Result<()> {
     comparator.write_old(old)?;
     comparator.write_new(new)?;
     comparator.get_diffs()?;
-
-    // if let Err(err) = read_csv(f) {
-    //     println!("error running example: {}", err);
-    //     process::exit(1);
-    // }
 
     Ok(())
 }
