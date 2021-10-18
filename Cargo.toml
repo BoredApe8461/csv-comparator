@@ -1,5 +1,5 @@
 [package]
-name = "csv-size-diff"
+name = "csv-comparator"
 version = "0.1.0"
 edition = "2018"
 authors = ["Hernando Castano <hernando@hcastano.com>"]
