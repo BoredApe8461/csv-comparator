@@ -38,15 +38,24 @@ impl CsvComparator {
 
     fn get_diffs(&self) -> Result<Vec<Row>> {
         let mut result = Vec::new();
-        let mut all_contracts: HashMap<String, ()> = self.old_csv.iter().map(|(k, _)| (k.clone(), ())).collect();
+        let mut all_contracts: HashMap<String, ()> =
+            self.old_csv.iter().map(|(k, _)| (k.clone(), ())).collect();
         self.new_csv.iter().for_each(|(k, _)| {
             all_contracts.insert(k.clone(), ());
         });
 
         for (contract, _) in all_contracts {
             let def = (UnoptimizedSize::default(), OptimizedSize::default());
-            let (unopt_size_old, opt_size_old) = self.old_csv.get(&contract).or(Some(&def)).expect("failed getting old_csv entry");
-            let (unopt_size_new, opt_size_new) = self.new_csv.get(&contract).or(Some(&def)).expect("failed getting new_csv entry");
+            let (unopt_size_old, opt_size_old) = self
+                .old_csv
+                .get(&contract)
+                .or(Some(&def))
+                .expect("failed getting old_csv entry");
+            let (unopt_size_new, opt_size_new) = self
+                .new_csv
+                .get(&contract)
+                .or(Some(&def))
+                .expect("failed getting new_csv entry");
             let unopt_diff = unopt_size_new - unopt_size_old;
             let opt_diff = opt_size_new - opt_size_old;
 
@@ -106,23 +115,27 @@ mod tests {
     #[test]
     fn entries_from_old_csv_must_appear_in_diff() {
         // given
-        let mut old_csv: HashMap::<String, (UnoptimizedSize, OptimizedSize)> = HashMap::new();
-        let new_csv: HashMap::<String, (UnoptimizedSize, OptimizedSize)> = HashMap::new();
-        old_csv.insert("removed_in_new_csv".to_string(), (UnoptimizedSize::default(), OptimizedSize::default()));
-        let comparator = CsvComparator {
-            old_csv,
-            new_csv,
-        };
+        let mut old_csv: HashMap<String, (UnoptimizedSize, OptimizedSize)> = HashMap::new();
+        let new_csv: HashMap<String, (UnoptimizedSize, OptimizedSize)> = HashMap::new();
+        old_csv.insert(
+            "removed_in_new_csv".to_string(),
+            (UnoptimizedSize::default(), OptimizedSize::default()),
+        );
+        let comparator = CsvComparator { old_csv, new_csv };
 
         // when
         let res = comparator.get_diffs().expect("getting diffs failed");
 
         // then
         let mut iter = res.iter();
-        assert_eq!(iter.next().expect("first diff entry must exist"), &Row { name: "removed_in_new_csv".to_string(),
-            unoptimized_size: UnoptimizedSize::default(),
-            optimized_size: OptimizedSize::default(),
-        });
+        assert_eq!(
+            iter.next().expect("first diff entry must exist"),
+            &Row {
+                name: "removed_in_new_csv".to_string(),
+                unoptimized_size: UnoptimizedSize::default(),
+                optimized_size: OptimizedSize::default(),
+            }
+        );
         assert_eq!(iter.next(), None);
     }
 }
