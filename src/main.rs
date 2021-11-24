@@ -113,13 +113,15 @@ mod tests {
     use super::*;
 
     #[test]
-    fn entries_from_old_csv_must_appear_in_diff() {
+    fn entries_existent_only_in_old_csv_must_still_appear_in_diff() {
         // given
         let mut old_csv: HashMap<String, (UnoptimizedSize, OptimizedSize)> = HashMap::new();
         let new_csv: HashMap<String, (UnoptimizedSize, OptimizedSize)> = HashMap::new();
+        let unoptimized_size = 1.337;
+        let optimized_size = 0.1337;
         old_csv.insert(
             "removed_in_new_csv".to_string(),
-            (UnoptimizedSize::default(), OptimizedSize::default()),
+            (unoptimized_size, optimized_size),
         );
         let comparator = CsvComparator { old_csv, new_csv };
 
@@ -132,8 +134,38 @@ mod tests {
             iter.next().expect("first diff entry must exist"),
             &Row {
                 name: "removed_in_new_csv".to_string(),
-                unoptimized_size: UnoptimizedSize::default(),
-                optimized_size: OptimizedSize::default(),
+                // must be a negative diff, since it was removed
+                unoptimized_size: unoptimized_size * -1.0,
+                optimized_size: optimized_size * -1.0,
+            }
+        );
+        assert_eq!(iter.next(), None);
+    }
+
+    #[test]
+    fn entries_existent_only_in_new_csv_must_still_appear_in_diff() {
+        // given
+        let old_csv: HashMap<String, (UnoptimizedSize, OptimizedSize)> = HashMap::new();
+        let mut new_csv: HashMap<String, (UnoptimizedSize, OptimizedSize)> = HashMap::new();
+        let unoptimized_size = 1.337;
+        let optimized_size = 0.1337;
+        new_csv.insert(
+            "not_existent_in_old_csv".to_string(),
+            (unoptimized_size, optimized_size),
+        );
+        let comparator = CsvComparator { old_csv, new_csv };
+
+        // when
+        let res = comparator.get_diffs().expect("getting diffs failed");
+
+        // then
+        let mut iter = res.iter();
+        assert_eq!(
+            iter.next().expect("first diff entry must exist"),
+            &Row {
+                name: "not_existent_in_old_csv".to_string(),
+                unoptimized_size,
+                optimized_size,
             }
         );
         assert_eq!(iter.next(), None);
